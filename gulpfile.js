@@ -1,3 +1,32 @@
+var gulp = require('gulp');
+var pug = require('gulp-pug');
+var less = require('gulp-less');
+var minifyCSS = require('gulp-csso');
+var concat = require('gulp-concat');
+var sourcemaps = require('gulp-sourcemaps');
+
+gulp.task('html', function () {
+    return gulp.src('client/templates/*.pug')
+        .pipe(pug())
+        .pipe(gulp.dest('build/html'))
+});
+
+gulp.task('css', function () {
+    return gulp.src('client/templates/*.less')
+        .pipe(less())
+        .pipe(minifyCSS())
+        .pipe(gulp.dest('build/css'))
+});
+
+gulp.task('js', function () {
+    return gulp.src('client/javascript/*.js')
+        .pipe(sourcemaps.init())
+        .pipe(concat('app.min.js'))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('build/js'))
+});
+
+
 // Include gulp
 var gulp = require('gulp');
 
@@ -34,9 +63,10 @@ gulp.task('scripts', function () {
 
 // Watch Files For Changes
 gulp.task('watch', function () {
-    gulp.watch('js/*.js', ['lint', 'scripts']);
+    gulp.watch('js/*.js', ['scripts']);
     gulp.watch('scss/*.scss', ['sass']);
 });
 
+
 // Default Task
-gulp.task('default', ['lint', 'sass', 'scripts', 'watch']);
+gulp.task('default', ['html', 'css', 'js', 'lint', 'sass', 'scripts', 'watch']);
