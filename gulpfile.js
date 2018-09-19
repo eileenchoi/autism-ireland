@@ -1,5 +1,5 @@
 //initialize all of our variables
-var app, base, concat, directory, gulp, gutil, hostname, path, refresh, sass, uglify, imagemin, minifyCSS, del, browserSync, autoprefixer, gulpSequence, shell, sourceMaps, plumber;
+var app, base, concat, directory, gulp, gutil, hostname, path, refresh, sass, uglify, imagemin, minifyCSS, del, autoprefixer, gulpSequence, shell, sourceMaps, plumber;
 
 var autoPrefixBrowserList = ['last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'];
 
@@ -13,23 +13,11 @@ sass = require('gulp-sass');
 sourceMaps = require('gulp-sourcemaps');
 imagemin = require('gulp-imagemin');
 minifyCSS = require('gulp-minify-css');
-browserSync = require('browser-sync');
 autoprefixer = require('gulp-autoprefixer');
 gulpSequence = require('gulp-sequence').use(gulp);
 shell = require('gulp-shell');
 plumber = require('gulp-plumber');
 
-gulp.task('browserSync', function () {
-    browserSync({
-        server: {
-            baseDir: "./"
-        },
-        options: {
-            reloadDelay: 250
-        },
-        notify: false
-    });
-});
 
 
 //compressing images & handle SVG files
@@ -61,8 +49,7 @@ gulp.task('scripts', function () {
         .on('error', gutil.log)
         //where we will store our finalized, compressed script
         .pipe(gulp.dest('app/scripts'))
-        //notify browserSync to refresh
-        .pipe(browserSync.reload({ stream: true }));
+        
 });
 
 //compiling our Javascripts for deployment
@@ -111,8 +98,7 @@ gulp.task('styles', function () {
         .pipe(sourceMaps.write())
         //where to save our final, compressed css file
         .pipe(gulp.dest('app/styles'))
-        //notify browserSync to refresh
-        .pipe(browserSync.reload({ stream: true }));
+        
 });
 
 //compiling our SCSS files for deployment
@@ -142,7 +128,6 @@ gulp.task('html', function () {
     //watch any and all HTML files and refresh when something changes
     return gulp.src('app/*.html')
         .pipe(plumber())
-        .pipe(browserSync.reload({ stream: true }))
         //catch errors
         .on('error', gutil.log);
 });
@@ -196,14 +181,14 @@ gulp.task('scaffold', function () {
 //this is the main watcher to use when in active development
 //  this will:
 //  startup the web server,
-//  start up browserSync
 //  compress all scripts and SCSS files
-gulp.task('default', gulp.series('browserSync', 'scripts', 'styles', function () {
+gulp.task('default', gulp.series('scripts', 'styles', function (done) {
     //a list of watchers, so it will watch all of the following files waiting for changes
     gulp.watch('app/scripts/src/**', ['scripts']);
     gulp.watch('app/styles/scss/**', ['styles']);
     gulp.watch('app/images/**', ['images']);
     gulp.watch('app/*.html', ['html']);
+    done();
 }));
 
 
